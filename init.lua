@@ -151,6 +151,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 
 ---@type vim.Option
+-- This is the runtime path. All that's happening is that the lazypath is being added to the runtime path.
 local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
