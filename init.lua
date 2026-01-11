@@ -110,8 +110,6 @@ local rtp = vim.opt.rtp
 rtp:prepend(lazypath)
 
 require('lazy').setup {
-  -- Detect tabstop and shiftwidth automatically
-  'NMAC427/guess-indent.nvim',
   -- Adds git related signs to the gutter, as well as utilities for managing changes
   {
     'lewis6991/gitsigns.nvim',
@@ -260,21 +258,7 @@ require('lazy').setup {
         },
       }
 
-      -- LSP servers and clients are able to communicate to each other what features they support.
-      --  By default, Neovim doesn't support everything that is in the LSP specification.
-      --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
-      --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
-
-      -- Enable the following language servers
-      --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
-      --
-      --  Add any additional override configuration in the following tables. Available keys are:
-      --  - cmd (table): Override the default command used to start the server
-      --  - filetypes (table): Override the default list of associated filetypes for the server
-      --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-      --  - settings (table): Override the default settings passed when initializing the server.
-      --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
         -- gopls = {},
@@ -282,8 +266,6 @@ require('lazy').setup {
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         -- ts_ls = {},
-        --
-
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -300,19 +282,6 @@ require('lazy').setup {
         },
       }
 
-      -- Ensure the servers and tools above are installed
-      --
-      -- To check the current status of installed tools and/or manually install
-      -- other tools, you can run
-      --    :Mason
-      --
-      -- You can press `g?` for help in this menu.
-      --
-      -- `mason` had to be setup earlier: to configure its options see the
-      -- `dependencies` table for `nvim-lspconfig` above.
-      --
-      -- You can add other tools here that you want Mason to install
-      -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
@@ -335,7 +304,6 @@ require('lazy').setup {
       }
     end,
   },
-
   { -- Autoformat
     'stevearc/conform.nvim',
     event = { 'BufWritePre' },
@@ -353,9 +321,6 @@ require('lazy').setup {
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
         local disable_filetypes = { c = true, cpp = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
@@ -368,18 +333,10 @@ require('lazy').setup {
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
   },
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
+  {
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
@@ -389,51 +346,12 @@ require('lazy').setup {
           comments = { italic = false }, -- Disable italics in comments
         },
       }
-
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
-    end,
-  },
-  { -- Collection of various small independent plugins/modules
-    'echasnovski/mini.nvim',
-    config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
-      --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
-
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
-
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
-
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
   {
     'nvim-treesitter/nvim-treesitter',
-    branch = 'main', -- New rewritten branch
+    branch = 'main',
     build = ':TSUpdate',
     config = function()
       local ts = require 'nvim-treesitter'
